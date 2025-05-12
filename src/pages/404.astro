@@ -3,20 +3,20 @@ import MainLayout from '../layouts/MainLayout.astro';
 ---
 
 <MainLayout title="404 - Page Not Found | AGNOSTO">
-  <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-    <div class="relative mb-8">
-      <h1 class="text-9xl font-cyber font-bold text-cyber-blue opacity-20">404</h1>
+  <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-8">
+    <div class="relative mb-6 sm:mb-8">
+      <h1 class="text-6xl sm:text-9xl font-cyber font-bold text-cyber-blue opacity-20">404</h1>
       <div class="absolute inset-0 flex items-center justify-center">
-        <h2 class="text-4xl font-cyber text-cyber-pink neon-text">ERROR</h2>
+        <h2 class="text-2xl sm:text-4xl font-cyber text-cyber-pink neon-text">ERROR</h2>
       </div>
     </div>
     
-    <p class="text-xl max-w-md mb-8 font-anime">
+    <p class="text-base sm:text-xl max-w-md mb-6 sm:mb-8 font-anime">
       <span class="text-cyber-blue">システムエラー:</span> The page you're looking for has been lost in the digital void.
     </p>
     
-    <div class="glass-card p-6 max-w-md w-full mb-8 glitch-container">
-      <div class="font-mono text-sm text-left text-cyber-yellow overflow-hidden">
+    <div class="glass-card p-4 sm:p-6 max-w-md w-full mb-6 sm:mb-8 glitch-container">
+      <div class="font-mono text-xs sm:text-sm text-left text-cyber-yellow overflow-hidden">
         <div class="glitch-text">
           > SYSTEM SCAN COMPLETE<br>
           > TARGET URL NOT FOUND<br>
@@ -27,8 +27,8 @@ import MainLayout from '../layouts/MainLayout.astro';
     </div>
     
     <a 
-      href="/" 
-      class="px-8 py-3 bg-cyber-blue text-cyber-black font-cyber rounded hover:bg-cyber-pink transition-colors duration-300 group relative overflow-hidden"
+      href="/"
+      class="px-6 sm:px-8 py-2 sm:py-3 bg-cyber-blue text-cyber-black font-cyber rounded hover:bg-cyber-pink transition-colors duration-300 group relative overflow-hidden text-sm sm:text-base"
     >
       <span class="relative z-10">RETURN TO HOME</span>
       <span class="absolute inset-0 bg-cyber-pink transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
@@ -37,6 +37,13 @@ import MainLayout from '../layouts/MainLayout.astro';
 </MainLayout>
 
 <style>
+  .glass-card {
+    background-color: rgba(13, 18, 30, 0.7);
+    border: 1px solid rgba(5, 217, 232, 0.2);
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
   .glitch-container {
     position: relative;
     overflow: hidden;
@@ -104,5 +111,16 @@ import MainLayout from '../layouts/MainLayout.astro';
       transform: translateX(0);
     }
   }
+  
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .neon-text {
+      text-shadow: 0 0 5px rgba(255, 42, 109, 0.7),
+                  0 0 10px rgba(255, 42, 109, 0.5);
+    }
+    
+    .glitch-container::before {
+      width: 3px;
+    }
+  }
 </style>
-
