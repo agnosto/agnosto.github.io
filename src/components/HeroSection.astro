@@ -1,0 +1,139 @@
+---
+---
+<section class="min-h-[90vh] flex flex-col items-center justify-center text-center relative overflow-hidden px-4 py-16">
+  <!-- Cyberpunk grid background -->
+  <div class="cyber-grid absolute inset-0 z-0"></div>
+  
+  <!-- Glow effect -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-cyber-blue/20 rounded-full blur-3xl"></div>
+  <div class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-cyber-pink/20 rounded-full blur-3xl"></div>
+  
+  <div class="relative z-10">
+    <h1 class="text-4xl sm:text-6xl md:text-8xl font-cyber font-bold mb-4 sm:mb-6">
+      <span id="animated-text" class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-pink to-cyber-blue neon-text">
+        agnosto
+      </span>
+    </h1>
+    <p class="text-lg sm:text-xl md:text-2xl max-w-2xl font-anime mb-8 sm:mb-10 text-gray-300 px-4">
+      Creating tools for efficient content archiving and playback
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+      <a href="/projects" class="px-6 sm:px-8 py-3 bg-cyber-blue/90 text-cyber-black font-cyber rounded hover:bg-cyber-pink transition-all duration-300 border border-cyber-blue hover:border-cyber-pink hover:shadow-glow text-sm sm:text-base">
+        EXPLORE PROJECTS
+      </a>
+      <a href="https://github.com/agnosto" target="_blank" rel="noopener" class="px-6 sm:px-8 py-3 border border-cyber-blue text-cyber-blue font-cyber rounded hover:border-cyber-pink hover:text-cyber-pink transition-all duration-300 hover:shadow-glow text-sm sm:text-base">
+        GITHUB
+      </a>
+    </div>
+  </div>
+  
+  <!-- Animated particles -->
+  <div class="absolute inset-0 z-0" id="particles"></div>
+</section>
+
+<style>
+  .shadow-glow {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+</style>
+
+<script>
+  // Japanese katakana characters for text animation
+  const letters = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+  const originalText = "agnosto";
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const element = document.getElementById("animated-text");
+    
+    if (!element) return;
+    
+    // Initial animation on page load
+    runAnimation();
+    
+    // Animation on hover
+    element.addEventListener("mouseover", runAnimation);
+    
+    function runAnimation() {
+      let iteration = 0;
+      
+      // Clear any existing interval
+      clearInterval(window.textAnimationInterval);
+      
+      window.textAnimationInterval = setInterval(() => {
+        element.innerText = originalText
+          .split("")
+          .map((letter, index) => {
+            if (index < iteration) {
+              return originalText[index];
+            }
+            return letters[Math.floor(Math.random() * letters.length)];
+          })
+          .join("");
+          
+        if (iteration >= originalText.length) {
+          clearInterval(window.textAnimationInterval);
+        }
+          
+        iteration += 1 / 3;
+      }, 50);
+    }
+    
+    // Simple particle system
+    const particlesContainer = document.getElementById('particles');
+    if (particlesContainer) {
+      const particleCount = window.innerWidth < 768 ? 25 : 50;
+      for (let i = 0; i < particleCount; i++) {
+        createParticle(particlesContainer);
+      }
+    }
+    
+    function createParticle(container) {
+      const particle = document.createElement('div');
+      particle.className = 'absolute w-1 h-1 bg-cyber-blue opacity-70';
+      
+      // Random position
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      particle.style.left = `${x}%`;
+      particle.style.top = `${y}%`;
+      
+      // Random size
+      const size = Math.random() * 3;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      
+      // Random opacity
+      particle.style.opacity = (Math.random() * 0.5 + 0.1).toString();
+      
+      // Add subtle glow
+      particle.style.boxShadow = '0 0 2px #05d9e8';
+      particle.style.borderRadius = '50%';
+      
+      // Animation
+      const duration = Math.random() * 10 + 5;
+      particle.style.animation = `float ${duration}s linear infinite`;
+      
+      container.appendChild(particle);
+    }
+  });
+</script>
+
+<style>
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: var(--opacity, 0.5);
+    }
+    90% {
+      opacity: var(--opacity, 0.5);
+    }
+    100% {
+      transform: translateY(-100vh) translateX(20px);
+      opacity: 0;
+    }
+  }
+</style>
+

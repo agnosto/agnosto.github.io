@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet">
+    <title>{title}</title>
+  </head>
+  <body class="bg-cyber-black text-white min-h-screen flex flex-col">
+    <!-- Background effect -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div class="cyber-grid absolute inset-0 z-0 opacity-20"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyber-blue/5 to-cyber-pink/5 opacity-30"></div>
+    </div>
+    
+    <!-- Navbar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-cyber-dark/60 border-b border-cyber-blue/30">
+      <nav class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+        <a href="/" class="font-cyber text-2xl text-cyber-blue hover:text-cyber-pink transition-colors duration-300 flex items-center gap-2 mb-3 sm:mb-0">
+          <span class="bg-cyber-blue/10 px-2 py-1 rounded">AGNOSTO</span>
+        </a>
+        <div class="flex gap-4 sm:gap-6">
+          <a href="/" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">HOME</a>
+          <a href="/projects" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">PROJECTS</a>
+          <a href="/about" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">ABOUT</a>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="relative z-10 flex-grow">
+      <slot />
+    </main>
+    
+    <footer class="bg-cyber-dark/70 border-t border-cyber-blue/30 py-6 mt-auto">
+      <div class="container mx-auto px-4 text-center font-cyber text-sm text-gray-400">
+        &copy; {new Date().getFullYear()} AGNOSTO • All Rights Reserved
+      </div>
+    </footer>
+  </body>
+</html>
+

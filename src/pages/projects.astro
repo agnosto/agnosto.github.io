@@ -1,0 +1,69 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const projects = [
+  {
+    title: "Fansly Scraper",
+    description: "An all-in-one scraper for Fansly content with multiple platform support.",
+    image: "/images/fansly-scraper.jpg",
+    link: "/projects/fansly-scraper",
+    github: "https://github.com/agnosto/fansly-scraper",
+    tags: ["Go", "TUI", "CLI", "Multi-platform"]
+  },
+  {
+    title: "Archive Player",
+    description: "A specialized video player designed to work with the Fansly Scraper.",
+    image: "/images/archive-player.jpg",
+    link: "/projects/archive-player",
+    github: "https://github.com/agnosto/archive-player",
+    tags: ["Media", "Player", "Cross-platform"]
+  }
+];
+---
+
+<MainLayout title="Projects | AGNOSTO">
+  <div class="container mx-auto px-4 py-6 sm:py-10">
+    <h1 class="text-3xl sm:text-4xl font-cyber text-cyber-blue mb-8 sm:mb-12 text-center">PROJECTS</h1>
+    
+    <div class="grid grid-cols-1 gap-8 sm:gap-12 max-w-4xl mx-auto">
+      {projects.map(project => (
+        <ProjectCard 
+          title={project.title}
+          description={project.description}
+          image={project.image}
+          link={project.link}
+          github={project.github}
+          tags={project.tags}
+        />
+      ))}
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  /* Mobile-specific adjustments */
+  @media (max-width: 640px) {
+    :global(.project-card) {
+      padding: 1rem;
+    }
+    
+    :global(.project-card-image) {
+      height: 180px;
+    }
+    
+    :global(.project-card-title) {
+      font-size: 1.5rem;
+    }
+    
+    :global(.project-card-description) {
+      font-size: 0.9rem;
+    }
+    
+    :global(.project-card-tag) {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+</style>
+

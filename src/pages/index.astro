@@ -1,11 +1,33 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import MainLayout from '../layouts/MainLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ProjectPreview from '../components/ProjectPreview.astro';
 ---
-
-<Layout>
-	<Welcome />
-</Layout>
+<MainLayout title="AGNOSTO | Home">
+  <HeroSection />
+  
+  <section class="mt-16 sm:mt-24 mb-12 sm:mb-16 px-4">
+    <h2 class="font-cyber text-3xl sm:text-4xl text-center mb-8 sm:mb-12">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-blue to-cyber-purple">
+        Featured Projects
+      </span>
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
+      <ProjectPreview 
+        title="Fansly Scraper"
+        description="An all-in-one scraper for Fansly content. Efficiently archive and organize content with this powerful tool."
+        image="/images/fansly-scraper.jpg"
+        link="/projects/fansly-scraper"
+		tags={["Go", "CLI", "TUI", "Multi-platform"]}
+      />
+      <ProjectPreview 
+        title="Archive Player"
+        description="A specialized video player designed to work seamlessly with archived content. Optimized for your viewing experience."
+        image="/images/archive-player.jpg"
+        link="/projects/archive-player"
+        tags={["Media", "Player", "Cross-platform"]}
+      />
+    </div>
+  </section>
+</MainLayout>

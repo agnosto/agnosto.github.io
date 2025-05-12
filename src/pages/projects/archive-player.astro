@@ -1,0 +1,286 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+
+// Fallback data structure for GitHub artifacts
+const fallbackData = {
+  artifacts: [
+    {
+      version: "latest",
+      date: "May 10, 2024",
+      artifacts: [
+        { 
+          platform: "Windows", 
+          file: "Wails Build Windows ArchivePlayer.zip",
+          url: "https://github.com/agnosto/archive-player/actions/runs/14951585319/artifacts/3100381849"
+        },
+        { 
+          platform: "Linux", 
+          file: "Wails Build Linux ArchivePlayer.zip",
+          url: "https://github.com/agnosto/archive-player/actions/runs/14951585319/artifacts/3100377868"
+        }
+      ],
+      workflowRunId: "14951585319"
+    }
+  ]
+};
+---
+
+<MainLayout title="Archive Player | AGNOSTO">
+  <div class="container mx-auto px-4 py-6 sm:py-8">
+    <!-- Back to Projects Link -->
+    <a href="/projects" class="inline-flex items-center mb-4 sm:mb-6 text-cyber-blue hover:text-cyber-pink transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Back to Projects
+    </a>
+
+    <div class="flex flex-col lg:flex-row gap-6 sm:gap-8">
+      <!-- Left Column - Info -->
+      <div class="w-full lg:w-1/3">
+        <h1 class="text-3xl sm:text-4xl font-cyber text-cyber-blue mb-4">Archive Player</h1>
+        
+        <div class="glass-card p-4 sm:p-6 mb-6">
+          <h2 class="text-xl font-cyber text-cyber-pink mb-3">Overview</h2>
+          <p class="mb-4">
+            A specialized video player designed to work seamlessly with your archived content.
+          </p>
+          
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-cyber-purple/20 text-cyber-purple px-3 py-1 rounded-full text-sm">Wails</span>
+            <span class="bg-cyber-blue/20 text-cyber-blue px-3 py-1 rounded-full text-sm">Go</span>
+            <span class="bg-cyber-pink/20 text-cyber-pink px-3 py-1 rounded-full text-sm">Vue</span>
+            <span class="bg-cyber-purple/20 text-cyber-purple px-3 py-1 rounded-full text-sm">Multi-platform</span>
+          </div>
+          
+          <p class="mb-4">
+            Archive Player is a specialized video player designed to work seamlessly with the Fansly Scraper. It provides an optimized viewing experience for your archived content with a clean, intuitive interface.
+          </p>
+          
+          <div class="flex gap-4 mt-6">
+            <a 
+              href="https://github.com/agnosto/archive-player"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center px-4 py-2 bg-cyber-purple text-white font-cyber rounded hover:bg-cyber-pink transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
+        </div>
+        
+        <div class="glass-card p-4 sm:p-6">
+          <h2 class="text-xl font-cyber text-cyber-pink mb-3">Features</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Optimized for content downloaded with Fansly Scraper</li>
+            <li>Cross-platform support (Windows, Linux)</li>
+            <li>Smooth playback experience</li>
+            <li>Intuitive navigation</li>
+            <li>Customizable settings</li>
+            <li>Responsive design</li>
+            <li>Metadata display</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Right Column - Downloads -->
+      <div class="w-full lg:w-2/3">
+        <div class="glass-card p-4 sm:p-6">
+          <h2 class="text-2xl font-cyber text-cyber-pink mb-6">Downloads</h2>
+          
+          <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+            <!-- GitHub Actions Workflow Artifacts -->
+            <div id="workflow-content" class="source-content">
+              <div class="mb-6">
+                <p class="text-sm text-gray-300 mb-4">
+                  Latest build from GitHub Actions workflow:
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {fallbackData.artifacts[0].artifacts.map(platform => (
+                    <div class="bg-cyber-black/70 rounded-lg p-4 border border-cyber-blue/30 flex flex-col">
+                      <h3 class="text-cyber-blue font-cyber mb-2">{platform.platform}</h3>
+                      <p class="text-xs text-gray-400 mb-3">Build date: {fallbackData.artifacts[0].date}</p>
+                      <a 
+                        href={platform.url}
+                        class="mt-auto inline-flex items-center justify-center px-4 py-2 bg-cyber-blue/20 hover:bg-cyber-blue/30 text-white rounded-lg transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download {platform.file}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div class="text-sm text-gray-400">
+                <p class="mb-2">
+                  <span class="text-cyber-pink">Note:</span> GitHub requires you to be logged in to download workflow artifacts.
+                </p>
+                <p>
+                  If you encounter any issues, please check the GitHub repository for updates.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Installation Instructions -->
+          <div class="mt-8">
+            <h2 class="text-xl font-cyber text-cyber-pink mb-4">Installation Instructions</h2>
+            
+            <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+              <div class="mb-6">
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Windows</h3>
+                <ol class="list-decimal pl-6 space-y-2">
+                  <li>Download the Windows zip file</li>
+                  <li>Extract the zip file to a location of your choice</li>
+                  <li>Run the ArchivePlayer.exe file inside the extracted folder</li>
+                  <li>Optional: Create a shortcut to the executable for easier access</li>
+                </ol>
+              </div>
+              
+              <div>
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Linux</h3>
+                <ol class="list-decimal pl-6 space-y-2">
+                  <li>Download the Linux zip file</li>
+                  <li>Extract the zip file: <code class="bg-cyber-black/70 px-2 py-1 rounded">unzip "Wails Build Linux ArchivePlayer.zip"</code></li>
+                  <li>Navigate to the extracted directory: <code class="bg-cyber-black/70 px-2 py-1 rounded">cd build/bin</code></li>
+                  <li>Make the file executable: <code class="bg-cyber-black/70 px-2 py-1 rounded">chmod +x ArchivePlayer</code></li>
+                  <li>Run the application: <code class="bg-cyber-black/70 px-2 py-1 rounded">./ArchivePlayer</code></li>
+                  <li>Optional: Create a desktop file for easier access:
+                    <pre class="bg-cyber-black/70 px-3 py-2 rounded mt-2 text-xs overflow-x-auto">
+echo "[Desktop Entry]
+Name=Archive Player
+Exec=/path/to/ArchivePlayer
+Icon=/path/to/icon.png
+Type=Application
+Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.desktop
+                    </pre>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Technical Details -->
+          <div class="mt-8">
+            <h2 class="text-xl font-cyber text-cyber-pink mb-4">Technical Details</h2>
+            
+            <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+              <div class="mb-6">
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Technology Stack</h3>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li><strong>Framework:</strong> <a href="https://wails.io" target="_blank" class="text-cyber-pink hover:underline">Wails</a> - A framework for building desktop applications using Go and Web Technologies</li>
+                  <li><strong>Backend:</strong> Go - For performance and cross-platform compatibility</li>
+                  <li><strong>Frontend:</strong> Vue.js - For the user interface</li>
+                  <li><strong>Media Playback:</strong> Native media capabilities with custom controls</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">System Requirements</h3>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li><strong>Windows:</strong> Windows 10 or later (64-bit)</li>
+                  <li><strong>Linux:</strong> Modern Linux distribution (Ubuntu 20.04+, Fedora 34+, etc.)</li>
+                  <li><strong>RAM:</strong> 4GB minimum, 8GB recommended</li>
+                  <li><strong>Storage:</strong> 100MB for the application (plus space for your media files)</li>
+                  <li><strong>Graphics:</strong> GPU with hardware acceleration support recommended for smoother playback</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Development Status -->
+          <div class="mt-8">
+            <h2 class="text-xl font-cyber text-cyber-pink mb-4">Development Status</h2>
+            
+            <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+              <p class="mb-4">
+                Archive Player is currently in active development. The current build is a pre-release version with core functionality implemented.
+              </p>
+              
+              <div class="mb-6">
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Current Features</h3>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li>Basic video playback functionality</li>
+                  <li>Support for various video formats</li>
+                  <li>Cross-platform support (Windows, Linux)</li>
+                  <li>Simple, intuitive interface</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Planned Features</h3>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li>Enhanced playlist management</li>
+                  <li>Metadata display and editing</li>
+                  <li>Customizable themes</li>
+                  <li>Performance optimizations</li>
+                  <li>macOS support</li>
+                  <li>Official releases on GitHub</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+ .active-tab {
+    color: theme('colors.cyber-pink');
+    border-bottom: 2px solid theme('colors.cyber-pink');
+  }
+  
+  .glass-card {
+    background-color: rgba(13, 18, 30, 0.7);
+    border: 1px solid rgba(5, 217, 232, 0.2);
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 640px) {
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .glass-card {
+      padding: 1rem;
+    }
+    
+    h1 {
+      font-size: 1.75rem;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+    }
+    
+    h3 {
+      font-size: 1.1rem;
+    }
+    
+    .bg-cyber-dark\/40 {
+      padding: 0.75rem;
+    }
+    
+    code, pre {
+      font-size: 0.7rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
