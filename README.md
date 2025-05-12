@@ -1,4 +1,4 @@
-# Astro Starter Kit: Basics
+# Project site
 
 ```sh
 bun create astro@latest -- --template basics
