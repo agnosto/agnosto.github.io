@@ -228,49 +228,96 @@ const versions = processedReleases.length > 0 ? processedReleases : [
   document.addEventListener('DOMContentLoaded', () => {
     // Store versions data from server
     window.versionsData = versions;
-    
+      
     // Platform tabs
     const platformTabs = document.querySelectorAll('.platform-tab');
     const archOptions = document.getElementById('arch-options');
     const downloadLink = document.getElementById('download-link');
     const fileSize = document.getElementById('file-size');
-    
+      
     // Version selector
     const versionSelect = document.getElementById('version-select');
-    
+      
     // Current selections
-    let currentPlatform = 'windows';
+    let currentPlatform = detectPlatform();
     let currentVersionIndex = 0;
     let currentArchIndex = 0;
+      
+    // Detect user's platform
+    function detectPlatform() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (userAgent.includes('windows')) return 'windows';
+      if (userAgent.includes('mac os') || userAgent.includes('macintosh') || userAgent.includes('darwin')) return 'macos';
+      if (userAgent.includes('linux')) return 'linux';
+      return 'windows'; // Default to Windows if detection fails
+    }
     
+    // Detect user's architecture
+    function detectArchitecture() {
+      // Most browsers are 64-bit these days
+      const is64Bit = navigator.userAgent.includes('x86_64') || 
+                      navigator.userAgent.includes('x86-64') || 
+                      navigator.userAgent.includes('Win64') || 
+                      navigator.userAgent.includes('x64') ||
+                      navigator.userAgent.includes('amd64');
+                      
+      const isArm = navigator.userAgent.includes('arm') || navigator.userAgent.includes('aarch64');
+      
+      if (isArm) return 'ARM64';
+      return is64Bit ? 'x64' : 'x86';
+    }
+    
+    // Find the index of the architecture that matches the detected or preferred arch
+    function findPreferredArchIndex(platforms) {
+      const detectedArch = detectArchitecture();
+      
+      // First priority: exact match for detected architecture
+      const exactMatch = platforms.findIndex(p => 
+        p.arch.toLowerCase() === detectedArch.toLowerCase() ||
+        (detectedArch === 'x64' && p.arch === 'Intel') ||
+        (detectedArch === 'ARM64' && p.arch === 'Apple Silicon')
+      );
+      
+      if (exactMatch !== -1) return exactMatch;
+      
+      // Second priority: x64/amd64/Intel
+      const x64Match = platforms.findIndex(p => 
+        p.arch === 'x64' || p.arch === 'Intel' || p.arch.toLowerCase().includes('amd64')
+      );
+      
+      if (x64Match !== -1) return x64Match;
+      
+      // Default to first option if no match
+      return 0;
+    }
+      
     // Initialize the architecture options
     function updateArchOptions() {
       const version = window.versionsData[currentVersionIndex];
       const platforms = version.platforms[currentPlatform];
-      
+          
       // Clear existing options
       archOptions.innerHTML = '';
-      
+          
       // Add new options
       platforms.forEach((arch, i) => {
         const label = document.createElement('label');
         label.className = 'architecture-option flex items-center p-3 rounded-lg border border-cyber-blue/30 bg-cyber-black/50 cursor-pointer hover:bg-cyber-blue/10 transition-colors';
-        
+              
         const input = document.createElement('input');
         input.type = 'radio';
         input.name = 'arch';
         input.value = i;
         input.className = 'h-4 w-4 text-cyber-blue';
-        input.checked = i === 0;
-        
+              
         const span = document.createElement('span');
         span.className = 'ml-2 text-white';
         span.textContent = arch.arch;
-        
+              
         label.appendChild(input);
         label.appendChild(span);
         archOptions.appendChild(label);
-        
+              
         // Add event listener
         input.addEventListener('change', () => {
           if (input.checked) {
@@ -279,24 +326,39 @@ const versions = processedReleases.length > 0 ? processedReleases : [
           }
         });
       });
+          
+      // Set the preferred architecture
+      currentArchIndex = findPreferredArchIndex(platforms);
       
-      // Reset current arch index
-      currentArchIndex = 0;
-      
+      // Check the appropriate radio button
+      const inputs = archOptions.querySelectorAll('input[type="radio"]');
+      if (inputs[currentArchIndex]) {
+        inputs[currentArchIndex].checked = true;
+      }
+          
       // Update download link
       updateDownloadLink();
+      
+      // Update platform tabs UI
+      platformTabs.forEach(tab => {
+        if (tab.getAttribute('data-platform') === currentPlatform) {
+          tab.classList.add('active-tab');
+        } else {
+          tab.classList.remove('active-tab');
+        }
+      });
     }
-    
+      
     // Update download link based on selections
     function updateDownloadLink() {
       const version = window.versionsData[currentVersionIndex];
       const platforms = version.platforms[currentPlatform];
-      
+          
       if (platforms && platforms[currentArchIndex]) {
         const asset = platforms[currentArchIndex];
         downloadLink.href = asset.url;
         downloadLink.download = asset.file;
-        
+              
         // Show file size if available
         if (asset.size) {
           const size = formatFileSize(asset.size);
@@ -310,53 +372,53 @@ const versions = processedReleases.length > 0 ? processedReleases : [
         fileSize.textContent = '';
       }
     }
-    
+      
     // Format file size
     function formatFileSize(bytes) {
       if (bytes === 0) return '0 B';
-      
+          
       const units = ['B', 'KB', 'MB', 'GB'];
       let size = bytes;
       let unitIndex = 0;
-      
+          
       while (size >= 1024 && unitIndex < units.length - 1) {
         size /= 1024;
         unitIndex++;
       }
-      
+          
       return `${size.toFixed(1)} ${units[unitIndex]}`;
     }
-    
+      
     // Platform tab click handler
     platformTabs.forEach(tab => {
       tab.addEventListener('click', () => {
         // Remove active class from all tabs
         platformTabs.forEach(t => t.classList.remove('active-tab'));
-        
+              
         // Add active class to clicked tab
         tab.classList.add('active-tab');
-        
+              
         // Update current platform
         currentPlatform = tab.getAttribute('data-platform');
-        
+              
         // Update architecture options
         updateArchOptions();
       });
     });
-    
+      
     // Version select change handler
     versionSelect.addEventListener('change', () => {
       currentVersionIndex = parseInt(versionSelect.value);
       updateArchOptions();
-      
+          
       // Update changelog visibility
       updateChangelogVisibility();
     });
-    
+      
     // Update changelog visibility based on selected version
     function updateChangelogVisibility() {
       const changelogItems = document.querySelectorAll('#changelog-container > div');
-      
+          
       changelogItems.forEach((item, index) => {
         if (index <= currentVersionIndex) {
           item.classList.remove('hidden');
@@ -365,11 +427,12 @@ const versions = processedReleases.length > 0 ? processedReleases : [
         }
       });
     }
-    
+      
     // Initialize
     updateArchOptions();
     updateChangelogVisibility();
   });
+
 </script>
 
 <style>
