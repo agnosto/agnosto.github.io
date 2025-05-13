@@ -1,0 +1,233 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Support | AGNOSTO">
+  <div class="container mx-auto px-4 py-12 sm:py-16">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-cyber text-center mb-8">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-blue to-cyber-purple">
+        Support My Work
+      </span>
+    </h1>
+    
+    <div class="max-w-3xl mx-auto glass-card p-6 sm:p-8 mb-10">
+      <div class="flex justify-end mb-4">
+        <button id="toggle-qr-theme" class="px-3 py-1 bg-cyber-dark/80 text-cyber-blue border border-cyber-blue/30 rounded-full text-xs font-cyber flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+          </svg>
+          Toggle QR Theme
+        </button>
+      </div>
+      
+      <p class="mb-6 text-lg">
+        If you find my projects useful and want to support their continued development, 
+        consider making a cryptocurrency donation. Your support helps me dedicate more time 
+        to creating and maintaining these tools.
+      </p>
+      
+      <div class="border-t border-cyber-blue/30 my-6"></div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Bitcoin -->
+        <div class="crypto-card">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-[#F7931A] rounded-full flex items-center justify-center mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-white">
+                <path d="M23.638 14.904c-1.602 6.43-8.113 10.34-14.542 8.736C2.67 22.05-1.244 15.525.362 9.105 1.962 2.67 8.475-1.243 14.9.358c6.43 1.605 10.342 8.115 8.738 14.548v-.002zm-6.35-4.613c.24-1.59-.974-2.45-2.64-3.03l.54-2.153-1.315-.33-.525 2.107c-.345-.087-.705-.167-1.064-.25l.526-2.127-1.32-.33-.54 2.165c-.285-.067-.565-.132-.84-.2l-1.815-.45-.35 1.407s.975.225.955.236c.535.136.63.486.615.766l-1.477 5.92c-.075.166-.24.406-.614.314.015.02-.96-.24-.96-.24l-.66 1.51 1.71.426.93.242-.54 2.19 1.32.327.54-2.17c.36.1.705.19 1.05.273l-.51 2.154 1.32.33.545-2.19c2.24.427 3.93.257 4.64-1.774.57-1.637-.03-2.58-1.217-3.196.854-.193 1.5-.76 1.68-1.93h.01zm-3.01 4.22c-.404 1.64-3.157.75-4.05.53l.72-2.9c.896.23 3.757.67 3.33 2.37zm.41-4.24c-.37 1.49-2.662.735-3.405.55l.654-2.64c.744.18 3.137.524 2.75 2.084v.006z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-cyber text-cyber-blue">Bitcoin (BTC)</h3>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <div class="qr-container bg-white p-3 rounded-lg mb-4">
+              <img 
+                src="/btc-qr.png" 
+                alt="Bitcoin QR Code" 
+                class="w-48 h-48"
+              />
+            </div>
+            <div class="w-full">
+              <p class="text-sm text-gray-300 mb-2 text-center">Wallet Address:</p>
+              <div class="wallet-address">
+                <code class="bg-cyber-dark p-3 rounded block text-cyber-pink break-all text-xs sm:text-sm">
+                  bc1q0e78wrtc9ezp6tqv000wfewgqf2ue4tpzdk7ee
+                </code>
+                <button class="copy-btn" data-address="bc1q0e78wrtc9ezp6tqv000wfewgqf2ue4tpzdk7ee">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Solana -->
+        <div class="crypto-card">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-[#9945FF] rounded-full flex items-center justify-center mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 397.7 311.7" class="w-6 h-6 fill-white">
+                <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-cyber text-cyber-purple">Solana (SOL)</h3>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <div class="qr-container bg-white p-3 rounded-lg mb-4">
+              <img 
+                src="/sol-qr.png" 
+                alt="Solana QR Code" 
+                class="w-48 h-48"
+              />
+            </div>
+            <div class="w-full">
+              <p class="text-sm text-gray-300 mb-2 text-center">Wallet Address:</p>
+              <div class="wallet-address">
+                <code class="bg-cyber-dark p-3 rounded block text-cyber-pink break-all text-xs sm:text-sm">
+                  Bv3kYZcwSTHXAQtnPddTF27D3F6Gc29v2MfFLqmGF6Gf
+                </code>
+                <button class="copy-btn" data-address="Bv3kYZcwSTHXAQtnPddTF27D3F6Gc29v2MfFLqmGF6Gf">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-cyber-blue/30 my-8"></div>
+      
+      <div class="text-center">
+        <p class="text-gray-300 mb-4">More payment methods coming soon...</p>
+        <a href="/projects" class="inline-flex items-center px-4 py-2 bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30 rounded hover:bg-cyber-blue/30 transition-colors font-cyber">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+          </svg>
+          Back to Projects
+        </a>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    const toggleQrTheme = document.getElementById('toggle-qr-theme');
+    const qrContainers = document.querySelectorAll('.qr-container');
+    
+    // Copy button functionality
+    copyButtons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const address = button.getAttribute('data-address');
+        
+        try {
+          await navigator.clipboard.writeText(address);
+          
+          // Change button text temporarily
+          const span = button.querySelector('span');
+          const originalText = span.textContent;
+          span.textContent = 'Copied!';
+          button.classList.add('copied');
+          
+          // Reset after 2 seconds
+          setTimeout(() => {
+            span.textContent = originalText;
+            button.classList.remove('copied');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      });
+    });
+    
+    // QR theme toggle
+    if (toggleQrTheme) {
+      toggleQrTheme.addEventListener('click', () => {
+        qrContainers.forEach(container => {
+          if (container.classList.contains('bg-white')) {
+            container.classList.remove('bg-white');
+            container.classList.add('bg-cyber-dark');
+          } else {
+            container.classList.remove('bg-cyber-dark');
+            container.classList.add('bg-white');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+<style>
+  .glass-card {
+    background-color: rgba(13, 18, 30, 0.7);
+    border: 1px solid rgba(5, 217, 232, 0.2);
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .crypto-card {
+    padding: 1.5rem;
+    background-color: rgba(10, 15, 25, 0.5);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(5, 217, 232, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .crypto-card:hover {
+    border-color: rgba(5, 217, 232, 0.3);
+    box-shadow: 0 0 20px rgba(5, 217, 232, 0.1);
+  }
+  
+  .wallet-address {
+    position: relative;
+  }
+  
+  .copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(5, 217, 232, 0.1);
+    color: rgba(5, 217, 232, 0.8);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+  }
+  
+  .copy-btn:hover {
+    background-color: rgba(5, 217, 232, 0.2);
+    color: rgba(5, 217, 232, 1);
+  }
+  
+  .copy-btn.copied {
+    background-color: rgba(0, 200, 83, 0.2);
+    color: rgba(0, 200, 83, 1);
+  }
+  
+  .qr-container {
+    transition: transform 0.3s ease;
+  }
+  
+  .crypto-card:hover .qr-container {
+    transform: scale(1.02);
+  }
+  
+  @media (max-width: 640px) {
+    .crypto-card {
+      padding: 1rem;
+    }
+  }
+</style>
+
