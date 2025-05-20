@@ -1,33 +1,95 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import { fetchReleases, parseChangelog, formatDate, formatFileSize } from '../../utils/github';
 
-// Fallback data structure for GitHub artifacts
-const fallbackData = {
-  artifacts: [
-    {
-      version: "latest",
-      date: "May 19, 2025",
-      artifacts: [
-        { 
-          platform: "Windows", 
-          file: "ArchivePlayer-windows.zip",
-          url: "https://github.com/agnosto/archive-player/actions/runs/15127773923/artifacts/3156500016"
-        },
-        { 
-          platform: "Linux", 
-          file: "ArchivePlayer-linux.zip",
-          url: "https://github.com/agnosto/archive-player/actions/runs/15127773923/artifacts/3156495798"
-        },
-        { 
-          platform: "MacOS", 
-          file: "ArchivePlayer-macos.zip",
-          url: "https://github.com/agnosto/archive-player/actions/runs/15127773923/artifacts/3156497755"
-        }
-      ],
-      workflowRunId: "15127773923"
+// Fetch releases from GitHub
+const releases = await fetchReleases('agnosto/archive-player');
+const latestRelease = releases.length > 0 ? releases[0] : null;
+
+// Process releases data
+const processedReleases = releases.map(release => {
+  const version = release.tag_name.replace('v', '');
+  const date = formatDate(release.published_at);
+  const changelog = parseChangelog(release.body);
+  
+  // Categorize assets by platform
+  const platforms: {
+    windows: Array<{arch: string, file: string, url: string, size: number}>,
+    macos: Array<{arch: string, file: string, url: string, size: number}>,
+    linux: Array<{arch: string, file: string, url: string, size: number}>
+  } = {
+    windows: [],
+    macos: [],
+    linux: []
+  };
+  
+  release.assets.forEach(asset => {
+    const name = asset.name.toLowerCase();
+    
+    if (name.endsWith('.exe')) {
+      platforms.windows.push({
+        arch: 'x64',
+        file: asset.name,
+        url: asset.browser_download_url,
+        size: asset.size
+      });
+    } else if (name.includes('archiveplayer') && !name.includes('.exe') && !name.includes('.app') && !name.includes('.pkg')) {
+      platforms.linux.push({
+        arch: 'x64',
+        file: asset.name,
+        url: asset.browser_download_url,
+        size: asset.size
+      });
+    } else if (name.includes('.app.zip')) {
+      platforms.macos.push({
+        arch: 'App Bundle',
+        file: asset.name,
+        url: asset.browser_download_url,
+        size: asset.size
+      });
+    } else if (name.includes('.pkg')) {
+      platforms.macos.push({
+        arch: 'Installer',
+        file: asset.name,
+        url: asset.browser_download_url,
+        size: asset.size
+      });
     }
-  ]
-};
+  });
+  
+  return {
+    version,
+    date,
+    changelog,
+    platforms
+  };
+});
+
+// Default to empty data if no releases found
+const versions = processedReleases.length > 0 ? processedReleases : [
+  {
+    version: "1.0.0",
+    date: "May 19, 2024",
+    changelog: [
+      "Initial release of Archive Player",
+      "Basic video playback functionality",
+      "Support for various video formats",
+      "Cross-platform support (Windows, Linux, macOS)"
+    ],
+    platforms: {
+      windows: [
+        { arch: "x64", file: "ArchivePlayer.exe", url: "", size: 0 }
+      ],
+      macos: [
+        { arch: "App Bundle", file: "FanslyArchivePlayer.app.zip", url: "", size: 0 },
+        { arch: "Installer", file: "FanslyArchivePlayer.pkg", url: "", size: 0 }
+      ],
+      linux: [
+        { arch: "x64", file: "ArchivePlayer", url: "", size: 0 }
+      ]
+    }
+  }
+];
 ---
 
 <MainLayout title="Archive Player | AGNOSTO">
@@ -39,7 +101,6 @@ const fallbackData = {
       </svg>
       Back to Projects
     </a>
-
     <div class="flex flex-col lg:flex-row gap-6 sm:gap-8">
       <!-- Left Column - Info -->
       <div class="w-full lg:w-1/3">
@@ -82,7 +143,7 @@ const fallbackData = {
           <ul class="list-disc pl-6 space-y-2">
             <li>Optimized for content downloaded with Fansly Scraper</li>
             <li>Clip creation tool to extract segments (up to 5 minutes) from videos (requires FFmpeg)</li>
-            <li>Cross-platform support (Windows, Linux)</li>
+            <li>Cross-platform support (Windows, Linux, macOS)</li>
             <li>Smooth playback experience</li>
             <li>Intuitive navigation</li>
             <li>Customizable settings</li>
@@ -98,69 +159,92 @@ const fallbackData = {
           <h2 class="text-2xl font-cyber text-cyber-pink mb-6">Downloads</h2>
           
           <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
-            <!-- GitHub Actions Workflow Artifacts -->
-            <div id="workflow-content" class="source-content">
-              <div class="mb-6">
-                <p class="text-sm text-gray-300 mb-4">
-                  Latest build from GitHub Actions workflow:
-                </p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {fallbackData.artifacts[0].artifacts.map(platform => (
-                    <div class="bg-cyber-black/70 rounded-lg p-4 border border-cyber-blue/30 flex flex-col">
-                      <h3 class="text-cyber-blue font-cyber mb-2">{platform.platform}</h3>
-                      <p class="text-xs text-gray-400 mb-3">Build date: {fallbackData.artifacts[0].date}</p>
-                      <a 
-                        href={platform.url}
-                        class="mt-auto inline-flex items-center justify-center px-4 py-2 bg-cyber-blue/20 hover:bg-cyber-blue/30 text-white rounded-lg transition-colors"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Download {platform.file}
-                      </a>
-                    </div>
+            <!-- Version selector -->
+            <div class="mb-6">
+            <label for="version-select" class="block text-sm font-medium text-gray-300 mb-2">Version</label>
+            <div class="relative">
+              <div class="custom-select">
+                <button id="version-dropdown-btn" class="select-button">
+                  <span id="selected-version">v<span id="version-number">{versions[0].version}</span> - {versions[0].date}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <div id="version-dropdown" class="select-dropdown hidden">
+                  {versions.map((v, i) => (
+                    <div class="select-option" data-index={i}>v{v.version} - {v.date}</div>
                   ))}
                 </div>
               </div>
-              
-              <div class="text-sm text-gray-400">
-                <p class="mb-2">
-                  <span class="text-cyber-pink">Note:</span> GitHub requires you to be logged in to download workflow artifacts.
-                </p>
-                <p>
-                  If you encounter any issues, please check the GitHub repository for updates.
-                </p>
+              <select id="version-select" class="hidden">
+                {versions.map((v, i) => (
+                  <option value={i} selected={i === 0}>{v.version} - {v.date}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+            <!-- Platform tabs -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Platform</label>
+              <div class="flex flex-wrap border-b border-cyber-blue/20">
+                <button class="platform-tab active-tab px-4 py-2 font-cyber text-sm" data-platform="windows">Windows</button>
+                <button class="platform-tab px-4 py-2 font-cyber text-sm" data-platform="macos">macOS</button>
+                <button class="platform-tab px-4 py-2 font-cyber text-sm" data-platform="linux">Linux</button>
               </div>
+            </div>
+            
+            <!-- Architecture options -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Architecture</label>
+              <div id="arch-options" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <!-- Platform options will be populated by JavaScript -->
+              </div>
+            </div>
+            
+            <!-- Download button -->
+            <div class="text-center">
+              <a id="download-link" href="#" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-cyber-pink hover:bg-cyber-pink/80 text-white font-cyber rounded-md transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Download
+                <span id="file-size" class="ml-2 text-xs opacity-80"></span>
+              </a>
             </div>
           </div>
           
           <!-- Installation Instructions -->
           <div class="mt-8">
-            <h2 class="text-xl font-cyber text-cyber-pink mb-4">Installation Instructions</h2>
-            
-            <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+            <h3 class="text-xl font-cyber text-cyber-blue mb-4">Installation Instructions</h3>
+            <div class="bg-cyber-dark/40 rounded-lg p-4 border border-cyber-blue/20 overflow-x-auto">
               <div class="mb-6">
-                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Windows</h3>
+                <h4 class="font-cyber text-cyber-pink mb-2">Windows</h4>
                 <ol class="list-decimal pl-6 space-y-2">
-                  <li>Download the Windows zip file</li>
-                  <li>Extract the zip file to a location of your choice</li>
-                  <li>Run the ArchivePlayer.exe file inside the extracted folder</li>
+                  <li>Download the Windows executable (.exe)</li>
+                  <li>Run the executable file</li>
                   <li>Optional: Create a shortcut to the executable for easier access</li>
                 </ol>
               </div>
               
-              <div>
-                <h3 class="text-lg font-cyber text-cyber-blue mb-2">Linux</h3>
+              <div class="mb-6">
+                <h4 class="font-cyber text-cyber-pink mb-2">macOS</h4>
                 <ol class="list-decimal pl-6 space-y-2">
-                  <li>Download the Linux zip file</li>
-                  <li>Extract the zip file: <code class="bg-cyber-black/70 px-2 py-1 rounded">unzip "Wails Build Linux ArchivePlayer.zip"</code></li>
-                  <li>Navigate to the extracted directory: <code class="bg-cyber-black/70 px-2 py-1 rounded">cd build/bin</code></li>
+                  <li>Download either the .app.zip (App Bundle) or .pkg (Installer)</li>
+                  <li>For .app.zip: Extract the zip file and move the .app to your Applications folder</li>
+                  <li>For .pkg: Run the installer and follow the instructions</li>
+                  <li>Note: You may need to right-click and select "Open" the first time to bypass Gatekeeper</li>
+                </ol>
+              </div>
+              
+              <div>
+                <h4 class="font-cyber text-cyber-pink mb-2">Linux</h4>
+                <ol class="list-decimal pl-6 space-y-2">
+                  <li>Download the Linux executable</li>
                   <li>Make the file executable: <code class="bg-cyber-black/70 px-2 py-1 rounded">chmod +x ArchivePlayer</code></li>
                   <li>Run the application: <code class="bg-cyber-black/70 px-2 py-1 rounded">./ArchivePlayer</code></li>
                   <li>Optional: Create a desktop file for easier access:
-                    <pre class="bg-cyber-black/70 px-3 py-2 rounded mt-2 text-xs overflow-x-auto">
-echo "[Desktop Entry]
+                    <pre class="bg-cyber-black/70 px-3 py-2 rounded mt-2 text-xs overflow-x-auto">echo "[Desktop Entry]
 Name=Archive Player
 Exec=/path/to/ArchivePlayer
 Icon=/path/to/icon.png
@@ -172,10 +256,29 @@ Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.deskt
               </div>
             </div>
           </div>
-                    
+          
+          <!-- Changelog -->
+          <div class="mt-8">
+            <h3 class="text-xl font-cyber text-cyber-blue mb-4">Changelog</h3>
+            <div class="space-y-4 overflow-x-auto" id="changelog-container">
+              {versions.map((version, index) => (
+                <div class={`p-4 border-l-4 ${index % 2 === 0 ? 'border-cyber-pink' : 'border-cyber-blue'} bg-cyber-dark/40 rounded-r-lg`}>
+                  <h4 class={`font-cyber ${index % 2 === 0 ? 'text-cyber-pink' : 'text-cyber-blue'}`}>
+                    v{version.version} - {version.date}
+                  </h4>
+                  <ul class="list-disc pl-6 mt-2 space-y-1 text-sm">
+                    {version.changelog.map(item => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+          
           <!-- Development Status -->
           <div class="mt-8">
-            <h2 class="text-xl font-cyber text-cyber-pink mb-4">Development Status</h2>
+            <h2 class="text-xl font-cyber text-cyber-blue mb-4">Development Status</h2>
             
             <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
               <p class="mb-4">
@@ -186,9 +289,9 @@ Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.deskt
                 <h3 class="text-lg font-cyber text-cyber-blue mb-2">Current Features</h3>
                 <ul class="list-disc pl-6 space-y-1">
                   <li>Basic video playback functionality</li>
-                  <li>Seamless integration with vods reocrded via the scraper</li>
+                  <li>Seamless integration with content recorded via the scraper</li>
                   <li>Support for various video formats</li>
-<li>Cross-platform support (Windows, Linux) (macos should be supported, you currently need to build the program yourself.)</li>
+                  <li>Cross-platform support (Windows, Linux, macOS)</li>
                   <li>Simple, intuitive interface</li>
                 </ul>
               </div>
@@ -198,7 +301,8 @@ Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.deskt
                 <ul class="list-disc pl-6 space-y-1">
                   <li>Customizable themes</li>
                   <li>Performance optimizations</li>
-                  <li>Official releases on GitHub</li>
+                  <li>Enhanced metadata display</li>
+                  <li>Playlist management</li>
                 </ul>
               </div>
             </div>
@@ -209,10 +313,254 @@ Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.deskt
   </div>
 </MainLayout>
 
+<script define:vars={{ versions }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Store versions data from server
+    window.versionsData = versions;
+    
+    // Platform tabs
+    const platformTabs = document.querySelectorAll('.platform-tab');
+    const archOptions = document.getElementById('arch-options');
+    const downloadLink = document.getElementById('download-link');
+    const fileSize = document.getElementById('file-size');
+    
+    // Version selector
+    const versionSelect = document.getElementById('version-select');
+    
+    // Current selections
+    let currentPlatform = detectPlatform();
+    let currentVersionIndex = 0;
+    let currentArchIndex = 0;
+    const versionDropdownBtn = document.getElementById('version-dropdown-btn');
+    const versionDropdown = document.getElementById('version-dropdown');
+    const versionOptions = document.querySelectorAll('.select-option');
+    const selectedVersion = document.getElementById('selected-version');
+    const versionNumber = document.getElementById('version-number');
+    // Toggle dropdown
+    versionDropdownBtn.addEventListener('click', () => {
+      versionDropdown.classList.toggle('hidden');
+      
+      // Mark the currently selected option
+      versionOptions.forEach((option, index) => {
+        if (index === currentVersionIndex) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+    });
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!versionDropdownBtn.contains(e.target) && !versionDropdown.contains(e.target)) {
+        versionDropdown.classList.add('hidden');
+      }
+    });
+    // Handle option selection
+    versionOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const index = parseInt(option.getAttribute('data-index'));
+        currentVersionIndex = index;
+        
+        // Update the hidden select element to maintain compatibility with existing code
+        versionSelect.value = index;
+        
+        // Update the button text
+        const version = window.versionsData[index];
+        selectedVersion.innerHTML = `v<span id="version-number">${version.version}</span> - ${version.date}`;
+        
+        // Close dropdown
+        versionDropdown.classList.add('hidden');
+        
+        // Update architecture options and changelog
+        updateArchOptions();
+        updateChangelogVisibility();
+      });
+    });
+    // Add subtle animation when opening dropdown
+    versionDropdownBtn.addEventListener('click', () => {
+      if (!versionDropdown.classList.contains('hidden')) {
+        versionDropdown.style.opacity = '0';
+        versionDropdown.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          versionDropdown.style.opacity = '1';
+          versionDropdown.style.transform = 'translateY(0)';
+        }, 10);
+      }
+    });
+    // Add transition styles programmatically
+    versionDropdown.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+    
+    // Detect user's platform
+    function detectPlatform() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (userAgent.includes('windows')) return 'windows';
+      if (userAgent.includes('mac os') || userAgent.includes('macintosh') || userAgent.includes('darwin')) return 'macos';
+      if (userAgent.includes('linux')) return 'linux';
+      return 'windows'; // Default to Windows if detection fails
+    }
+    
+    // Find the index of the architecture that matches the detected or preferred arch
+    function findPreferredArchIndex(platforms) {
+      // For Archive Player, we have fewer architecture options
+      // Default to first option if available
+      return platforms.length > 0 ? 0 : 0;
+    }
+    
+    // Initialize the architecture options
+    function updateArchOptions() {
+      const version = window.versionsData[currentVersionIndex];
+      const platforms = version.platforms[currentPlatform];
+      
+      // Clear existing options
+      archOptions.innerHTML = '';
+      
+      // Add new options
+      platforms.forEach((arch, i) => {
+        const label = document.createElement('label');
+        label.className = 'architecture-option flex items-center p-3 rounded-lg border border-cyber-blue/30 bg-cyber-black/50 cursor-pointer hover:bg-cyber-blue/10 transition-colors';
+        
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'arch';
+        input.value = i;
+        input.className = 'h-4 w-4 text-cyber-blue';
+        
+        const span = document.createElement('span');
+        span.className = 'ml-2 text-white';
+        span.textContent = arch.arch;
+        
+        label.appendChild(input);
+        label.appendChild(span);
+        archOptions.appendChild(label);
+        
+        // Add event listener
+        input.addEventListener('change', () => {
+          if (input.checked) {
+            currentArchIndex = i;
+            updateDownloadLink();
+          }
+        });
+      });
+      
+      // Set the preferred architecture
+      currentArchIndex = findPreferredArchIndex(platforms);
+      
+      // Check the appropriate radio button
+      const inputs = archOptions.querySelectorAll('input[type="radio"]');
+      if (inputs[currentArchIndex]) {
+        inputs[currentArchIndex].checked = true;
+      }
+      
+      // Update download link
+      updateDownloadLink();
+      
+      // Update platform tabs UI
+      platformTabs.forEach(tab => {
+        if (tab.getAttribute('data-platform') === currentPlatform) {
+          tab.classList.add('active-tab');
+        } else {
+          tab.classList.remove('active-tab');
+        }
+      });
+    }
+    
+    // Update download link based on selections
+    function updateDownloadLink() {
+      const version = window.versionsData[currentVersionIndex];
+      const platforms = version.platforms[currentPlatform];
+      
+      if (platforms && platforms[currentArchIndex]) {
+        const asset = platforms[currentArchIndex];
+        downloadLink.href = asset.url;
+        downloadLink.download = asset.file;
+        
+        // Show file size if available
+        if (asset.size) {
+          const size = formatFileSize(asset.size);
+          fileSize.textContent = `(${size})`;
+        } else {
+          fileSize.textContent = '';
+        }
+      } else {
+        downloadLink.href = '#';
+        downloadLink.download = '';
+        fileSize.textContent = '';
+      }
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let size = bytes;
+      let unitIndex = 0;
+      
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      
+      return `${size.toFixed(1)} ${units[unitIndex]}`;
+    }
+    
+    // Platform tab click handler
+    platformTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        platformTabs.forEach(t => t.classList.remove('active-tab'));
+        
+        // Add active class to clicked tab
+        tab.classList.add('active-tab');
+        
+        // Update current platform
+        currentPlatform = tab.getAttribute('data-platform');
+        
+        // Update architecture options
+        updateArchOptions();
+      });
+    });
+    
+    // Version select change handler
+    versionSelect.addEventListener('change', () => {
+      currentVersionIndex = parseInt(versionSelect.value);
+      updateArchOptions();
+      
+      // Update changelog visibility
+      updateChangelogVisibility();
+    });
+    
+    // Update changelog visibility based on selected version
+    function updateChangelogVisibility() {
+      const changelogItems = document.querySelectorAll('#changelog-container > div');
+      
+      changelogItems.forEach((item, index) => {
+        if (index <= currentVersionIndex) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+    
+    // Initialize
+    updateArchOptions();
+    updateChangelogVisibility();
+  });
+</script>
+
 <style>
- .active-tab {
+  .active-tab {
     color: theme('colors.cyber-pink');
     border-bottom: 2px solid theme('colors.cyber-pink');
+  }
+  
+  .architecture-option input[type="radio"]:checked + span {
+    color: theme('colors.cyber-pink');
+  }
+  
+  .architecture-option input[type="radio"]:checked {
+    background-color: theme('colors.cyber-pink');
   }
   
   .glass-card {
@@ -221,42 +569,87 @@ Categories=Video;AudioVideo;" > ~/.local/share/applications/archive-player.deskt
     border-radius: 0.5rem;
     backdrop-filter: blur(10px);
   }
-
-  /* Mobile-specific styles */
-  @media (max-width: 640px) {
-    pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    
-    .glass-card {
-      padding: 1rem;
-    }
-    
-    h1 {
-      font-size: 1.75rem;
-    }
-    
-    h2 {
-      font-size: 1.25rem;
-    }
-    
-    h3 {
-      font-size: 1.1rem;
-    }
-    
-    .bg-cyber-dark\/40 {
-      padding: 0.75rem;
-    }
-    
-    code, pre {
-      font-size: 0.7rem;
-    }
+  /* Custom Select Styles */
+  .custom-select {
+    position: relative;
+    width: 100%;
   }
   
-  @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: 1fr;
-    }
+  .select-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: rgba(10, 15, 25, 0.8);
+    border: 1px solid rgba(5, 217, 232, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    font-family: var(--font-cyber);
+    text-align: left;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(5, 217, 232, 0.1);
+  }
+  
+  .select-button:hover {
+    border-color: theme('colors.cyber-blue');
+    box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+  }
+  
+  .select-button:focus {
+    outline: none;
+    border-color: theme('colors.cyber-pink');
+    box-shadow: 0 0 20px rgba(255, 41, 117, 0.2);
+  }
+  
+  .select-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: rgba(13, 18, 30, 0.95);
+    border: 1px solid rgba(5, 217, 232, 0.3);
+    border-radius: 0.375rem;
+    max-height: 15rem;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+  
+  .select-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .select-option:hover {
+    background: rgba(5, 217, 232, 0.1);
+    color: theme('colors.cyber-pink');
+  }
+  
+  .select-option.selected {
+    background: rgba(255, 41, 117, 0.1);
+    color: theme('colors.cyber-pink');
+    border-left: 2px solid theme('colors.cyber-pink');
+}
+
+  /* Scrollbar for dropdown */
+  .select-dropdown::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .select-dropdown::-webkit-scrollbar-track {
+    background: rgba(13, 18, 30, 0.5);
+  }
+  
+  .select-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(5, 217, 232, 0.5);
+    border-radius: 3px;
+  }
+  
+  .select-dropdown::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 41, 117, 0.5);
   }
 </style>
+
