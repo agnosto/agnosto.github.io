@@ -22,6 +22,9 @@ const { title } = Astro.props;
       <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyber-blue/5 to-cyber-pink/5 opacity-30"></div>
     </div>
     
+    <!-- Cursor trail container -->
+    <div id="cursor-trail" class="fixed inset-0 pointer-events-none z-[9999]"></div>
+    
     <!-- Navbar -->
     <header class="sticky top-0 z-50 backdrop-blur-md bg-cyber-dark/60 border-b border-cyber-blue/30">
       <nav class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
@@ -32,7 +35,7 @@ const { title } = Astro.props;
           <a href="/" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">HOME</a>
           <a href="/projects" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">PROJECTS</a>
           <a href="/donate" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">DONATE</a>
-					<!--<a href="/about" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">ABOUT</a>-->
+          <!--<a href="/about" class="font-cyber text-sm sm:text-base text-white hover:text-cyber-pink transition-colors">ABOUT</a>-->
         </div>
       </nav>
     </header>
@@ -46,6 +49,149 @@ const { title } = Astro.props;
         &copy; {new Date().getFullYear()} AGNOSTO • All Rights Reserved
       </div>
     </footer>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const letters = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+        const trailContainer = document.getElementById('cursor-trail');
+        let currentIndex = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+        let lastCharX = -999;
+        let lastCharY = -999;
+        let isMoving = false;
+        let moveTimeout;
+        const minDistance = 25; // Minimum distance between characters
+        
+        if (!trailContainer) return;
+        
+        // Track mouse position
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          
+          // Calculate distance from last character position
+          const distance = Math.sqrt(
+            Math.pow(mouseX - lastCharX, 2) + Math.pow(mouseY - lastCharY, 2)
+          );
+          
+          // Only create character if we've moved far enough
+          if (distance >= minDistance) {
+            createTrailChar();
+            lastCharX = mouseX;
+            lastCharY = mouseY;
+          }
+          
+          if (!isMoving) {
+            isMoving = true;
+          }
+          
+          // Reset the timeout for stopping the trail
+          clearTimeout(moveTimeout);
+          moveTimeout = setTimeout(() => {
+            isMoving = false;
+            // Reset position tracking when stopped
+            lastCharX = -999;
+            lastCharY = -999;
+          }, 150);
+        });
+        
+        function createTrailChar() {
+          const char = document.createElement('div');
+          char.textContent = letters[currentIndex];
+          char.className = 'cursor-trail-char';
+          
+          // Position at cursor
+          char.style.position = 'absolute';
+          char.style.left = mouseX + 'px';
+          char.style.top = mouseY + 'px';
+          char.style.pointerEvents = 'none';
+          char.style.userSelect = 'none';
+          char.style.fontSize = '16px';
+          char.style.fontFamily = '"Noto Sans JP", sans-serif';
+          char.style.fontWeight = 'bold';
+          char.style.color = Math.random() > 0.5 ? '#05d9e8' : '#ff2a6d';
+          char.style.textShadow = `0 0 10px currentColor`;
+          char.style.zIndex = '9999';
+          char.style.transform = 'translate(-50%, -50%)';
+          
+          // Add glitch animation
+          char.style.animation = 'cursorGlitch 1.2s ease-out forwards';
+          
+          trailContainer.appendChild(char);
+          
+          // Cycle through characters
+          currentIndex = (currentIndex + 1) % letters.length;
+          
+          // Remove character after animation
+          setTimeout(() => {
+            if (char.parentNode) {
+              char.remove();
+            }
+          }, 1200);
+        }
+      });
+    </script>
+    
+    <style>
+      @keyframes cursorGlitch {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1) rotate(0deg);
+          filter: blur(0px);
+        }
+        10% {
+          transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
+          filter: blur(0.5px);
+        }
+        20% {
+          transform: translate(-50%, -50%) scale(0.9) rotate(-1deg);
+          color: #ff2a6d;
+        }
+        30% {
+          transform: translate(-50%, -50%) scale(1.05) rotate(1deg);
+          filter: blur(1px);
+        }
+        40% {
+          transform: translate(-50%, -50%) scale(0.95) rotate(-2deg);
+          color: #05d9e8;
+          opacity: 0.8;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.02) rotate(0deg);
+          filter: blur(0.5px);
+        }
+        60% {
+          transform: translate(-50%, -50%) scale(0.98) rotate(1deg);
+          opacity: 0.6;
+        }
+        70% {
+          transform: translate(-50%, -50%) scale(1.01) rotate(-0.5deg);
+          filter: blur(1.5px);
+          opacity: 0.4;
+        }
+        80% {
+          transform: translate(-50%, -50%) scale(0.99) rotate(0.5deg);
+          opacity: 0.2;
+        }
+        90% {
+          transform: translate(-50%, -50%) scale(1) rotate(0deg);
+          filter: blur(2px);
+          opacity: 0.1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+          filter: blur(3px);
+        }
+      }
+      
+      .cursor-trail-char {
+        position: absolute;
+        pointer-events: none;
+        user-select: none;
+        will-change: transform, opacity;
+      }
+    </style>
   </body>
 </html>
-
