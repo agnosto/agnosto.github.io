@@ -84,44 +84,68 @@ export function categorizeAssets(assets: Asset[]): Platforms {
     assets.forEach(asset => {
         const name = asset.name.toLowerCase();
 
-        // Skip non-archive files
-        if (!name.endsWith('.zip') && !name.endsWith('.tar.gz') && !name.endsWith('.exe')) {
+        // Skip non-archives
+        if (
+            !name.endsWith('.zip') &&
+            !name.endsWith('.tar.gz') &&
+            !name.endsWith('.exe')
+        ) {
             return;
         }
 
         let platform: keyof Platforms | null = null;
         let arch = '';
 
-        // Determine platform and architecture
+        /**
+         * Normalize architecture detection
+         * supports BOTH:
+         * - amd64 / x64
+         * - x86_64
+         * - arm64 / aarch64
+         */
+
+        const isX64 =
+            name.includes('x86_64') ||
+            name.includes('x64') ||
+            name.includes('amd64');
+
+        const isX86 =
+            name.includes('386') ||
+            name.includes('i386') ||
+            name.includes('x86') && !isX64;
+
+        const isArm64 =
+            name.includes('arm64') ||
+            name.includes('aarch64');
+
+        // -------- PLATFORM DETECTION --------
+
         if (name.includes('windows') || name.endsWith('.exe')) {
             platform = 'windows';
 
-            if (name.includes('386') || name.includes('x86')) {
-                arch = 'x86';
-            } else if (name.includes('amd64') || name.includes('x64')) {
-                arch = 'x64';
-            } else if (name.includes('arm64')) {
-                arch = 'ARM64';
-            }
-        } else if (name.includes('darwin') || name.includes('macos')) {
+            if (isX86) arch = 'x86';
+            else if (isX64) arch = 'x64';
+            else if (isArm64) arch = 'ARM64';
+
+        } else if (
+            name.includes('darwin') ||
+            name.includes('macos') ||
+            name.includes('osx')
+        ) {
             platform = 'macos';
 
-            if (name.includes('amd64') || name.includes('x64')) {
-                arch = 'Intel';
-            } else if (name.includes('arm64')) {
-                arch = 'Apple Silicon';
-            }
+            if (isX64) arch = 'Intel';
+            else if (isArm64) arch = 'Apple Silicon';
+
         } else if (name.includes('linux')) {
             platform = 'linux';
 
-            if (name.includes('386') || name.includes('x86')) {
-                arch = 'x86';
-            } else if (name.includes('amd64') || name.includes('x64')) {
-                arch = 'x64';
-            } else if (name.includes('arm64')) {
-                arch = 'ARM64';
-            }
+            if (isX86) arch = 'x86';
+            else if (isX64) arch = 'x64';
+            else if (isArm64) arch = 'ARM64';
         }
+
+        // -------- PUSH RESULT --------
 
         if (platform && arch) {
             platforms[platform].push({

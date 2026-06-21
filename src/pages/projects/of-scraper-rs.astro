@@ -1,0 +1,668 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import DownloadButton from '../../components/DownloadButton.astro';
+import { fetchReleases, parseChangelog, categorizeAssets, formatDate, formatFileSize } from '../../utils/github';
+
+// Fetch releases from GitHub
+const releases = await fetchReleases('agnosto/of-scraper-rs');
+const latestRelease = releases.length > 0 ? releases[0] : null;
+
+// Process releases data
+const processedReleases = releases.map(release => {
+  const version = release.tag_name.replace('v', '');
+  const date = formatDate(release.published_at);
+  const changelog = parseChangelog(release.body);
+  const platforms = categorizeAssets(release.assets);
+  
+  return {
+    version,
+    date,
+    changelog,
+    platforms
+  };
+});
+
+// Default to empty data if no releases found
+const versions = processedReleases.length > 0 ? processedReleases : [
+  {
+    version: "0.1.3",
+    date: "June 2026",
+    changelog: [
+      "Initial public release"
+    ],
+    platforms: {
+      windows: [
+        {
+          arch: "x64",
+          file: "of-scraper-rs-windows-x86_64.zip",
+          url: "",
+          size: 0
+        }
+      ],
+      macos: [
+        {
+          arch: "Apple Silicon",
+          file: "of-scraper-rs-macos-aarch64.zip",
+          url: "",
+          size: 0
+        }
+      ],
+      linux: [
+        {
+          arch: "x64",
+          file: "of-scraper-rs-linux-x86_64.zip",
+          url: "",
+          size: 0
+        }
+      ]
+    }
+  }
+];
+---
+
+<MainLayout title="OF Scraper RS | AGNOSTO">
+  <div class="container mx-auto px-4 py-6 sm:py-8">
+    <!-- Back to Projects Link -->
+    <a href="/projects" class="inline-flex items-center mb-4 sm:mb-6 text-cyber-blue hover:text-cyber-pink transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Back to Projects
+    </a>
+    <div class="flex flex-col lg:flex-row gap-6 sm:gap-8">
+      <!-- Left Column - Info -->
+      <div class="w-full lg:w-1/3">
+        <h1 class="text-3xl sm:text-4xl font-cyber text-cyber-blue mb-4">OF Scraper RS</h1>
+        
+        <div class="glass-card p-4 sm:p-6 mb-6">
+          <h2 class="text-xl font-cyber text-cyber-pink mb-3">Overview</h2>
+          <p class="mb-4">
+            A fast Rust-based scraper for OnlyFans content.
+          </p>
+          
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-cyber-purple/20 text-cyber-purple px-3 py-1 rounded-full text-sm">Rust</span>
+            <span class="bg-cyber-blue/20 text-cyber-blue px-3 py-1 rounded-full text-sm">TUI</span>
+            <span class="bg-cyber-blue/20 text-cyber-blue px-3 py-1 rounded-full text-sm">CLI</span>
+            <span class="bg-cyber-pink/20 text-cyber-pink px-3 py-1 rounded-full text-sm">Multi-platform</span>
+          </div>
+          
+          <p class="mb-4">
+            OF Scraper RS is a lightweight, high-performance archive tool written in Rust.
+            It provides fast downloads, low memory usage, and native binaries for Windows,
+            macOS, and Linux.
+          </p>
+          <p>
+            The project is maintained and distributed through GitHub Releases.
+          </p>
+          
+          <div class="flex gap-4 mt-6">
+            <a 
+              href="https://github.com/agnosto/of-scraper-rs"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center px-4 py-2 bg-cyber-purple text-white font-cyber rounded hover:bg-cyber-pink transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
+        </div>
+        
+        <div class="glass-card p-4 sm:p-6">
+          <h2 class="text-xl font-cyber text-cyber-pink mb-3">Features</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Written in Rust</li>
+            <li>Cross-platform binaries</li>
+            <li>Fast downloads</li>
+            <li>Low memory footprint</li>
+            <li>Portable ZIP releases</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Right Column - Downloads -->
+      <div class="w-full lg:w-2/3">
+        <div class="glass-card p-4 sm:p-6">
+          <h2 class="text-2xl font-cyber text-cyber-pink mb-6">Downloads</h2>
+          
+          <div class="bg-cyber-dark/40 rounded-lg p-4 sm:p-6 border border-cyber-blue/20">
+            <!-- Version selector -->
+            <div class="mb-6">
+            <label for="version-select" class="block text-sm font-medium text-gray-300 mb-2">Version</label>
+            <div class="relative">
+              <div class="custom-select">
+                <button id="version-dropdown-btn" class="select-button">
+                  <span id="selected-version">v<span id="version-number">{versions[0].version}</span> - {versions[0].date}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <div id="version-dropdown" class="select-dropdown hidden">
+                  {versions.map((v, i) => (
+                    <div class="select-option" data-index={i}>v{v.version} - {v.date}</div>
+                  ))}
+                </div>
+              </div>
+              <select id="version-select" class="hidden">
+                {versions.map((v, i) => (
+                  <option value={i} selected={i === 0}>{v.version} - {v.date}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+            
+            <!-- Platform tabs -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Platform</label>
+              <div class="flex flex-wrap border-b border-cyber-blue/20">
+                <button class="platform-tab active-tab px-4 py-2 font-cyber text-sm" data-platform="windows">Windows</button>
+                <button class="platform-tab px-4 py-2 font-cyber text-sm" data-platform="macos">macOS</button>
+                <button class="platform-tab px-4 py-2 font-cyber text-sm" data-platform="linux">Linux</button>
+              </div>
+            </div>
+            
+            <!-- Architecture options -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Architecture</label>
+              <div id="arch-options" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <!-- Platform options will be populated by JavaScript -->
+              </div>
+            </div>
+            
+            <!-- Download button -->
+            <div class="text-center">
+              <a id="download-link" href="#" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-cyber-pink hover:bg-cyber-pink/80 text-white font-cyber rounded-md transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Download
+                <span id="file-size" class="ml-2 text-xs opacity-80"></span>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Usage Instructions -->
+          <div class="mt-8">
+            <h3 class="text-xl font-cyber text-cyber-blue mb-4">Usage Instructions</h3>
+
+            <div class="bg-cyber-dark/40 rounded-lg p-4 border border-cyber-blue/20 overflow-x-auto">
+
+              <!-- TUI -->
+              <div class="mb-6">
+                <h4 class="font-cyber text-cyber-pink mb-2">Interactive TUI</h4>
+                <pre class="text-sm text-gray-300 overflow-x-auto p-2 bg-cyber-black/50 rounded"><code>./of-scraper-rs</code></pre>
+                <p class="text-sm text-gray-300 mt-1">Launches the interactive terminal UI</p>
+              </div>
+
+              <!-- Scrape CLI -->
+              <div class="mb-6">
+                <h4 class="font-cyber text-cyber-pink mb-2">Scrape Content (CLI)</h4>
+                <pre class="text-sm text-gray-300 overflow-x-auto p-2 bg-cyber-black/50 rounded"><code># Scrape all content from a user
+          ./of-scraper-rs scrape creator_name
+
+          # Scrape specific content types
+          ./of-scraper-rs scrape creator_name -c posts
+          ./of-scraper-rs scrape creator_name -c chats
+          ./of-scraper-rs scrape creator_name -c stories
+          ./of-scraper-rs scrape creator_name -c highlights
+          ./of-scraper-rs scrape creator_name -c labels
+          ./of-scraper-rs scrape creator_name -c purchases
+
+          # Scrape everything explicitly
+          ./of-scraper-rs scrape creator_name -c all
+
+          # Download ALL purchased content across creators
+          ./of-scraper-rs scrape ALL_PURCHASES</code></pre>
+              </div>
+
+              <!-- Like CLI -->
+              <div class="mb-6">
+                <h4 class="font-cyber text-cyber-pink mb-2">Like / Unlike Content</h4>
+                <pre class="text-sm text-gray-300 overflow-x-auto p-2 bg-cyber-black/50 rounded"><code># Like all posts from a creator
+          ./of-scraper-rs like creator_name
+
+          # Like specific content types
+          ./of-scraper-rs like creator_name -c posts
+          ./of-scraper-rs like creator_name -c chats
+          ./of-scraper-rs like creator_name -c stories
+          ./of-scraper-rs like creator_name -c all
+
+          # Unlike content
+          ./of-scraper-rs like creator_name --unlike
+          ./of-scraper-rs like creator_name -c posts --unlike</code></pre>
+              </div>
+
+              <!-- Link CLI -->
+              <div>
+                <h4 class="font-cyber text-cyber-pink mb-2">Download from Link</h4>
+                <pre class="text-sm text-gray-300 overflow-x-auto p-2 bg-cyber-black/50 rounded"><code># Download a post or chat message directly
+
+          # Post link
+          ./of-scraper-rs link "https://onlyfans.com/123456789/creator"
+
+          # Chat message link
+          ./of-scraper-rs link "https://onlyfans.com/my/chats/chat/61414285/?firstId=294063971970"</code></pre>
+              </div>
+
+            </div>
+          </div>
+          
+          <!-- Changelog -->
+          <div class="mt-8">
+            <h3 class="text-xl font-cyber text-cyber-blue mb-4">Changelog</h3>
+            <div class="space-y-4 overflow-x-auto" id="changelog-container">
+              {versions.map((version, index) => (
+                <div class={`p-4 border-l-4 ${index % 2 === 0 ? 'border-cyber-pink' : 'border-cyber-blue'} bg-cyber-dark/40 rounded-r-lg`}>
+                  <h4 class={`font-cyber ${index % 2 === 0 ? 'text-cyber-pink' : 'text-cyber-blue'}`}>
+                    v{version.version} - {version.date}
+                  </h4>
+                  <ul class="list-disc pl-6 mt-2 space-y-1 text-sm">
+                    {version.changelog.map(item => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script define:vars={{ versions }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Store versions data from server
+    window.versionsData = versions;
+      
+    // Platform tabs
+    const platformTabs = document.querySelectorAll('.platform-tab');
+    const archOptions = document.getElementById('arch-options');
+    const downloadLink = document.getElementById('download-link');
+    const fileSize = document.getElementById('file-size');
+      
+    // Version selector
+    const versionSelect = document.getElementById('version-select');
+      
+    // Current selections
+    let currentPlatform = detectPlatform();
+    let currentVersionIndex = 0;
+    let currentArchIndex = 0;
+
+    const versionDropdownBtn = document.getElementById('version-dropdown-btn');
+    const versionDropdown = document.getElementById('version-dropdown');
+    const versionOptions = document.querySelectorAll('.select-option');
+    const selectedVersion = document.getElementById('selected-version');
+    const versionNumber = document.getElementById('version-number');
+
+    // Toggle dropdown
+    versionDropdownBtn.addEventListener('click', () => {
+      versionDropdown.classList.toggle('hidden');
+      
+      // Mark the currently selected option
+      versionOptions.forEach((option, index) => {
+        if (index === currentVersionIndex) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!versionDropdownBtn.contains(e.target) && !versionDropdown.contains(e.target)) {
+        versionDropdown.classList.add('hidden');
+      }
+    });
+
+    // Handle option selection
+    versionOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const index = parseInt(option.getAttribute('data-index'));
+        currentVersionIndex = index;
+        
+        // Update the hidden select element to maintain compatibility with existing code
+        versionSelect.value = index;
+        
+        // Update the button text
+        const version = window.versionsData[index];
+        selectedVersion.innerHTML = `v<span id="version-number">${version.version}</span> - ${version.date}`;
+        
+        // Close dropdown
+        versionDropdown.classList.add('hidden');
+        
+        // Update architecture options and changelog
+        updateArchOptions();
+        updateChangelogVisibility();
+      });
+    });
+
+    // Add subtle animation when opening dropdown
+    versionDropdownBtn.addEventListener('click', () => {
+      if (!versionDropdown.classList.contains('hidden')) {
+        versionDropdown.style.opacity = '0';
+        versionDropdown.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          versionDropdown.style.opacity = '1';
+          versionDropdown.style.transform = 'translateY(0)';
+        }, 10);
+      }
+    });
+
+    // Add transition styles programmatically
+    versionDropdown.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      
+    // Detect user's platform
+    function detectPlatform() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (userAgent.includes('windows')) return 'windows';
+      if (userAgent.includes('mac os') || userAgent.includes('macintosh') || userAgent.includes('darwin')) return 'macos';
+      if (userAgent.includes('linux')) return 'linux';
+      return 'windows'; // Default to Windows if detection fails
+    }
+    
+    // Detect user's architecture
+    function detectArchitecture() {
+      // Most browsers are 64-bit these days
+      const is64Bit = navigator.userAgent.includes('x86_64') || 
+                      navigator.userAgent.includes('x86-64') || 
+                      navigator.userAgent.includes('Win64') || 
+                      navigator.userAgent.includes('x64') ||
+                      navigator.userAgent.includes('amd64');
+                      
+      const isArm = navigator.userAgent.includes('arm') || navigator.userAgent.includes('aarch64');
+      
+      if (isArm) return 'ARM64';
+      return is64Bit ? 'x64' : 'x86';
+    }
+    
+    // Find the index of the architecture that matches the detected or preferred arch
+    function findPreferredArchIndex(platforms) {
+      const detectedArch = detectArchitecture();
+      
+      // First priority: exact match for detected architecture
+      const exactMatch = platforms.findIndex(p => 
+        p.arch.toLowerCase() === detectedArch.toLowerCase() ||
+        (detectedArch === 'x64' && p.arch === 'Intel') ||
+        (detectedArch === 'ARM64' && p.arch === 'Apple Silicon')
+      );
+      
+      if (exactMatch !== -1) return exactMatch;
+      
+      // Second priority: x64/amd64/Intel
+      const x64Match = platforms.findIndex(p => 
+        p.arch === 'x64' || p.arch === 'Intel' || p.arch.toLowerCase().includes('amd64')
+      );
+      
+      if (x64Match !== -1) return x64Match;
+      
+      // Default to first option if no match
+      return 0;
+    }
+      
+    // Initialize the architecture options
+    function updateArchOptions() {
+      const version = window.versionsData[currentVersionIndex];
+      const platforms = version.platforms[currentPlatform];
+          
+      // Clear existing options
+      archOptions.innerHTML = '';
+          
+      // Add new options
+      platforms.forEach((arch, i) => {
+        const label = document.createElement('label');
+        label.className = 'architecture-option flex items-center p-3 rounded-lg border border-cyber-blue/30 bg-cyber-black/50 cursor-pointer hover:bg-cyber-blue/10 transition-colors';
+              
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'arch';
+        input.value = i;
+        input.className = 'h-4 w-4 text-cyber-blue';
+              
+        const span = document.createElement('span');
+        span.className = 'ml-2 text-white';
+        span.textContent = arch.arch;
+              
+        label.appendChild(input);
+        label.appendChild(span);
+        archOptions.appendChild(label);
+              
+        // Add event listener
+        input.addEventListener('change', () => {
+          if (input.checked) {
+            currentArchIndex = i;
+            updateDownloadLink();
+          }
+        });
+      });
+          
+      // Set the preferred architecture
+      currentArchIndex = findPreferredArchIndex(platforms);
+      
+      // Check the appropriate radio button
+      const inputs = archOptions.querySelectorAll('input[type="radio"]');
+      if (inputs[currentArchIndex]) {
+        inputs[currentArchIndex].checked = true;
+      }
+          
+      // Update download link
+      updateDownloadLink();
+      
+      // Update platform tabs UI
+      platformTabs.forEach(tab => {
+        if (tab.getAttribute('data-platform') === currentPlatform) {
+          tab.classList.add('active-tab');
+        } else {
+          tab.classList.remove('active-tab');
+        }
+      });
+    }
+      
+    // Update download link based on selections
+    function updateDownloadLink() {
+      const version = window.versionsData[currentVersionIndex];
+      const platforms = version.platforms[currentPlatform];
+          
+      if (platforms && platforms[currentArchIndex]) {
+        const asset = platforms[currentArchIndex];
+        downloadLink.href = asset.url;
+        downloadLink.download = asset.file;
+              
+        // Show file size if available
+        if (asset.size) {
+          const size = formatFileSize(asset.size);
+          fileSize.textContent = `(${size})`;
+        } else {
+          fileSize.textContent = '';
+        }
+      } else {
+        downloadLink.href = '#';
+        downloadLink.download = '';
+        fileSize.textContent = '';
+      }
+    }
+      
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+          
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let size = bytes;
+      let unitIndex = 0;
+          
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+          
+      return `${size.toFixed(1)} ${units[unitIndex]}`;
+    }
+      
+    // Platform tab click handler
+    platformTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        platformTabs.forEach(t => t.classList.remove('active-tab'));
+              
+        // Add active class to clicked tab
+        tab.classList.add('active-tab');
+              
+        // Update current platform
+        currentPlatform = tab.getAttribute('data-platform');
+              
+        // Update architecture options
+        updateArchOptions();
+      });
+    });
+      
+    // Version select change handler
+    versionSelect.addEventListener('change', () => {
+      currentVersionIndex = parseInt(versionSelect.value);
+      updateArchOptions();
+          
+      // Update changelog visibility
+      updateChangelogVisibility();
+    });
+      
+    // Update changelog visibility based on selected version
+    function updateChangelogVisibility() {
+      const changelogItems = document.querySelectorAll('#changelog-container > div');
+          
+      changelogItems.forEach((item, index) => {
+        if (index <= currentVersionIndex) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+      
+    // Initialize
+    updateArchOptions();
+    updateChangelogVisibility();
+  });
+
+</script>
+
+<style>
+  .active-tab {
+    color: theme('colors.cyber-pink');
+    border-bottom: 2px solid theme('colors.cyber-pink');
+  }
+  
+  .architecture-option input[type="radio"]:checked + span {
+    color: theme('colors.cyber-pink');
+  }
+  
+  .architecture-option input[type="radio"]:checked {
+    background-color: theme('colors.cyber-pink');
+  }
+  
+  .glass-card {
+    background-color: rgba(13, 18, 30, 0.7);
+    border: 1px solid rgba(5, 217, 232, 0.2);
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Custom Select Styles */
+  .custom-select {
+    position: relative;
+    width: 100%;
+  }
+  
+  .select-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: rgba(10, 15, 25, 0.8);
+    border: 1px solid rgba(5, 217, 232, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    font-family: var(--font-cyber);
+    text-align: left;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(5, 217, 232, 0.1);
+  }
+  
+  .select-button:hover {
+    border-color: theme('colors.cyber-blue');
+    box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+  }
+  
+  .select-button:focus {
+    outline: none;
+    border-color: theme('colors.cyber-pink');
+    box-shadow: 0 0 20px rgba(255, 41, 117, 0.2);
+  }
+  
+  .select-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: rgba(13, 18, 30, 0.95);
+    border: 1px solid rgba(5, 217, 232, 0.3);
+    border-radius: 0.375rem;
+    max-height: 15rem;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+  
+  .select-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .select-option:hover {
+    background: rgba(5, 217, 232, 0.1);
+    color: theme('colors.cyber-pink');
+  }
+  
+  .select-option.selected {
+    background: rgba(255, 41, 117, 0.1);
+    color: theme('colors.cyber-pink');
+    border-left: 2px solid theme('colors.cyber-pink');
+  }
+  
+  /* Scrollbar for dropdown */
+  .select-dropdown::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .select-dropdown::-webkit-scrollbar-track {
+    background: rgba(13, 18, 30, 0.5);
+  }
+  
+  .select-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(5, 217, 232, 0.5);
+    border-radius: 3px;
+  }
+  
+  .select-dropdown::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.cyber-pink');
+  }
+  
+  /* Mobile-specific styles */
+  @media (max-width: 640px) {
+    .platform-tab {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+    
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+</style>
